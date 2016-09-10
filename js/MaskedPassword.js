@@ -14,6 +14,7 @@ function MaskedPassword(passfield, symbolConfig)
 
   var regexAstralSymbols = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
 
+  // thx: https://mathiasbynens.be/notes/javascript-unicode
   this.countSymbols = function (string) {
   	return string
   		// Replace every surrogate pair with a BMP symbol.
@@ -21,6 +22,28 @@ function MaskedPassword(passfield, symbolConfig)
   		// …and *then* get the length.
   		.length;
   }
+
+  // thx: https://mathiasbynens.be/notes/javascript-unicode
+  this.getSymbols = function(string) {
+  	var index = 0;
+  	var length = string.length;
+  	var output = [];
+  	for (; index < length - 1; ++index) {
+  		var charCode = string.charCodeAt(index);
+  		if (charCode >= 0xD800 && charCode <= 0xDBFF) {
+  			charCode = string.charCodeAt(index + 1);
+  			if (charCode >= 0xDC00 && charCode <= 0xDFFF) {
+  				output.push(string.slice(index, index + 2));
+  				++index;
+  				continue;
+  			}
+  		}
+  		output.push(string.charAt(index));
+  	}
+  	output.push(string.charAt(index));
+  	return output;
+  }
+
 
 	//if the browser is unsupported, silently fail
 	//[pre-DOM1 browsers generally, and Opera 8 specifically]
@@ -105,7 +128,7 @@ function MaskedPassword(passfield, symbolConfig)
 	//otherwise we can't track which masked characters represent which letters
 	//(far from ideal I know, but I can't see how else to know
 	//which masking symbols represent which letters if you edit from the middle..?)
-	this.limitCaretPosition(passfield);
+	// this.limitCaretPosition(passfield);
 
 	//save a reference to this
 	var self = this;
@@ -181,15 +204,20 @@ MaskedPassword.prototype =
 			//run through the characters in the input string
 			//and build the plain password out of the corresponding characters
 			//from the real field, and any plain characters in the input
-			for(var i=0; i<this.countSymbols(textbox.value); i++)
+      textBoxToArr = this.getSymbols(textbox.value);
+      realFieldToArr = this.getSymbols(textbox._realfield.value);
+
+
+			for(var i=0; i<textBoxToArr.length; i++)
 			{
-				if(textbox.value.charAt(i) == this.symbol)
+        // TODO: should search for any of the symbols in config
+        if(textBoxToArr[i] == this.symbol)
 				{
-					plainpassword += textbox._realfield.value.charAt(i);
+					plainpassword += realFieldToArr[i];
 				}
 				else
 				{
-					plainpassword += textbox.value.charAt(i);
+					plainpassword += textBoxToArr[i];
 				}
 			}
 		}
