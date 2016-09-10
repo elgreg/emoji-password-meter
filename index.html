@@ -4,11 +4,23 @@
   <meta charset="utf-8">
   <title>emoji mask</title>
 
+  <script src="js/lib/at.js"></script>
   <!-- https://www.sitepoint.com/better-passwords-1-the-masked-password-field/ -->
   <script src="js/MaskedPassword.js"></script>
 
   <!-- https://github.com/dropbox/zxcvbn -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/zxcvbn/4.3.0/zxcvbn.js"></script>
+
+
+</head>
+<body>
+  <h1>Password Emoji Mask</h1>
+  <label for="pword">Password:</label>
+  <span>
+     <input type="hidden" name="pword" />
+     <input type="text" class="masked" id="pword" autocomplete="off" />
+  </span>
+
 
   <script>
     (function(){
@@ -19,24 +31,17 @@
       // 3 # safely unguessable: moderate protection from offline slow-hash scenario. (guesses < 10^10)
       // 4 # very unguessable: strong protection from offline slow-hash scenario. (guesses >= 10^10)
 
-      var maskConfig = {
-          "0": ,
-          "1": ,
-          "2": ,
-          "3": ,
-          "4":
+      var symbolConfig = {
+          "0": "💩",
+          "1": "🍑",
+          "2": "💨",
+          "3": "🌟",
+          "4": "👍"
       };
 
-      
 
-    });
+      new MaskedPassword(document.getElementById("pword"), symbolConfig);
+
+    })();
   </script>
-</head>
-<body>
-  <h1>Password Emoji Mask</h1>
-  <label for="pword">Password:</label>
-  <span>
-     <input type="hidden" name="pword" />
-     <input type="text" class="masked" id="pword" autocomplete="off" />
-  </span>
 </body>

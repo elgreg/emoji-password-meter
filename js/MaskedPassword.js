@@ -9,8 +9,19 @@
 *******************************************************************************/
 
 //masked password constructor
-function MaskedPassword(passfield, symbol)
+function MaskedPassword(passfield, symbolConfig)
 {
+
+  var regexAstralSymbols = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
+
+  this.countSymbols = function (string) {
+  	return string
+  		// Replace every surrogate pair with a BMP symbol.
+  		.replace(regexAstralSymbols, '_')
+  		// …and *then* get the length.
+  		.length;
+  }
+
 	//if the browser is unsupported, silently fail
 	//[pre-DOM1 browsers generally, and Opera 8 specifically]
 	if(typeof document.getElementById == 'undefined'
@@ -19,8 +30,9 @@ function MaskedPassword(passfield, symbol)
 	//or if the passfield doesn't exist, silently fail
 	if(passfield == null) { return false; }
 
-	//save the masking symbol
-	this.symbol = symbol;
+  this.symbolConfig = symbolConfig;
+  //save the masking symbol
+	this.symbol = symbolConfig["0"];
 
 	//identify Internet Explorer for a couple of conditions
 	this.isIE = typeof document.uniqueID != 'undefined';
@@ -144,6 +156,7 @@ function MaskedPassword(passfield, symbol)
 
 	//force the parent form to reset onload
 	//thereby clearing all values after soft refreh
+
 	this.forceFormReset(passfield);
 
 	//return true for success
@@ -168,7 +181,7 @@ MaskedPassword.prototype =
 			//run through the characters in the input string
 			//and build the plain password out of the corresponding characters
 			//from the real field, and any plain characters in the input
-			for(var i=0; i<textbox.value.length; i++)
+			for(var i=0; i<this.countSymbols(textbox.value); i++)
 			{
 				if(textbox.value.charAt(i) == this.symbol)
 				{
@@ -187,6 +200,10 @@ MaskedPassword.prototype =
 		{
 			plainpassword = textbox.value;
 		}
+
+    // set symbol based on zxcvbn
+    var zxcvbnResult = zxcvbn(plainpassword);
+    this.symbol = this.symbolConfig[zxcvbnResult.score];
 
 		//get the masked version of the plainpassword, according to fullmask
 		//and passing the textbox reference so we have its symbol and limit properties
@@ -221,18 +238,18 @@ MaskedPassword.prototype =
 
 		//create the masked password string then iterate
 		//through he characters in the plain password
-		for(var maskedstring = '', i=0; i<passwordstring.length; i++)
+		for(var maskedstring = '', i=0; i<this.countSymbols(passwordstring); i++)
 		{
 			//if we're below the masking limit,
 			//add a masking symbol to represent this character
-			if(i < passwordstring.length - characterlimit)
+			if(i < this.countSymbols(passwordstring) - characterlimit)
 			{
 				maskedstring += this.symbol;
 			}
 			//otherwise just copy across the real character
 			else
 			{
-				maskedstring += passwordstring.charAt(i);
+				maskedstring += passwordstring.at(i);
 			}
 		}
 
@@ -274,7 +291,7 @@ MaskedPassword.prototype =
 		}
 		//if the reference is not a form then the textbox wasn't wrapped in one
 		//so in that case we'll just have to abandon what we're doing here
-		if(!/form/i.test(textbox.nodeName)) { return null; }
+		if(textbox === null || !/form/i.test(textbox.nodeName)) { return null; }
 
 		//otherwise bind a load event to call the form's reset method
 		//we have to defer until load time for IE or it won't work
@@ -331,6 +348,7 @@ MaskedPassword.prototype =
 	//I'd really rather not to do this, but it's the only way to have reliable encoding
 	limitCaretPosition : function(textbox)
 	{
+    var _this = this;
 		//create a null timer reference and start function
 		var timer = null, start = function()
 		{
@@ -350,7 +368,7 @@ MaskedPassword.prototype =
 						//we could use to determine that don't work on created fields
 						//(they generate "Invalid argument" errors)
 						var range = textbox.createTextRange(),
-							valuelength = textbox.value.length,
+							valuelength = _this.countSymbols(textbox.value),
 							character = 'character';
 						range.moveEnd(character, valuelength);
 						range.moveStart(character, valuelength);
@@ -369,7 +387,7 @@ MaskedPassword.prototype =
 					{
 						//allow selection from or position at the end
 						//otherwise force position to the end
-						var valuelength = textbox.value.length;
+						var valuelength = _this.countSymbols(textbox.value);
 						if(!(textbox.selectionEnd == valuelength && textbox.selectionStart <= valuelength))
 						{
 							textbox.selectionStart = valuelength;
