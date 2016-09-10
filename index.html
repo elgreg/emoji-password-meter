@@ -3,6 +3,12 @@
 <head>
   <meta charset="utf-8">
   <title>emoji mask</title>
+  <link rel=stylesheet href="https://cdnjs.cloudflare.com/ajax/libs/pure/0.6.0/pure-min.css">
+  <style>
+    body {
+      padding: 20px 50px;
+    }
+    </style>
 
   <script src="js/lib/at.js"></script>
   <!-- https://www.sitepoint.com/better-passwords-1-the-masked-password-field/ -->
@@ -14,7 +20,9 @@
 
 </head>
 <body>
-  <h1>Password Emoji Mask</h1>
+  <h1>Welcome to the emoji Password meter</h1>
+  <h2>Try it! (submit does nothing)</h2>
+
   <form>
   <label for="pword">Password:</label>
   <span>
@@ -23,6 +31,29 @@
   </span>
   <input type="submit"/>
   </form>
+
+  <p>Using the <a href="https://github.com/elgreg/emoji-password-meter">emoji password meter</a>,
+     one can make a password strength meter that is a mask
+    over your password field and accepts a configuration of emjoi to use
+    to represent password strenth on the zxcvbn scale from 0-4</p>
+
+
+  <h2>How to</h2>
+
+  <ol>
+    <li>Get the <a href="https://github.com/elgreg/emoji-password-meter">source code</a></li>
+    <li>Follow the readme</li>
+    <li>Report issues here</li>
+  </ol>
+
+  <h2>About</h2>
+
+  <p>I coded this in 2 hours after an idea that <a href="https://twitter.com/SirJesstheBrave">@SirJesstheBrave</a>
+    and I came up with after <a href="https://www.meetup.com/DC-JavaScript/events/233618355/">DCJS[38]</a>. There
+    are probably tons of bugs and it was very much a copy and paste job. I could not have
+    coded any of it without <a href="https://www.sitepoint.com/better-passwords-1-the-masked-password-field/">this article on password masks</a>
+     or Mathias Bynens very helpful <a href="https://mathiasbynens.be/notes/javascript-unicode">JavaScript has a Unicode problem</a> article and polyfills.
+   </p>
 
 
   <script>

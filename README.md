@@ -21,6 +21,33 @@ Once you've got all those dependencies in your browser, just call:
 
 A hidden field with the real password will be created.
 
+Example:
+=======
+
+```javascript
+(function(){
+  // a small config of scores : emoji
+  // 0 # too guessable: risky password. (guesses < 10^3)
+  // 1 # very guessable: protection from throttled online attacks. (guesses < 10^6)
+  // 2 # somewhat guessable: protection from unthrottled online attacks. (guesses < 10^8)
+  // 3 # safely unguessable: moderate protection from offline slow-hash scenario. (guesses < 10^10)
+  // 4 # very unguessable: strong protection from offline slow-hash scenario. (guesses >= 10^10)
+
+  var symbolConfig = {
+      "0": "💩",
+      "1": "🍑",
+      "2": "💨",
+      "3": "🌟",
+      "4": "👍"
+  };
+
+
+  new MaskedPassword(document.getElementById("pword"), symbolConfig);
+
+})();
+
+```
+
 TODO
 =====
 
