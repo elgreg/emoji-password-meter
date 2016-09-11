@@ -51,9 +51,9 @@ Example:
 TODO
 =====
 
-[] - I haven't actually coded up what happens when the form submits. One would
+[ ] - I haven't actually coded up what happens when the form submits. One would
 probably have to swap out some names to get the real value on the server.
-[] - Make the index.html page pretty.
+[ ] - Make the index.html page pretty.
 
 
 Resources:
